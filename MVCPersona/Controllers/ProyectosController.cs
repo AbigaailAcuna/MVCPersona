@@ -19,11 +19,26 @@ namespace MVCPersona.Controllers
         }
 
         // GET: Proyectos
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(String textoABuscar)
         {
-            return View(await _context.Proyectos.ToListAsync());
-        }
+            if (_context.Proyectos == null)
+            {
+                return Problem("No se ha inicializado el contexto");
+            }
+            var proyectos = from p in _context.Proyectos
+                            select p;
+            if (!String.IsNullOrEmpty(textoABuscar))
+            {
+                proyectos = proyectos.Where(p => p.NombreProyecto.Contains(textoABuscar));
+            }
 
+            return View(await proyectos.ToListAsync());
+        }
+        [HttpPost]
+        public string Index(string textoABuscar, bool notUsed)
+        {
+            return "From [HttpPost]Index: filter on " + textoABuscar;
+        }
         // GET: Proyectos/Details/5
         public async Task<IActionResult> Details(int? id)
         {

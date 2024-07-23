@@ -19,10 +19,27 @@ namespace MVCPersona.Controllers
         }
 
         // GET: Asignaciones
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(String textoABuscar)
         {
-            var personaDBContext = _context.Asignaciones.Include(a => a.Empleado).Include(a => a.Proyecto);
-            return View(await personaDBContext.ToListAsync());
+            if (_context.Asignaciones == null)
+            {
+                return Problem("No se ha inicializado el contexto");
+            }
+            var asignaciones = from a in _context.Asignaciones.Include(a => a.Empleado).Include(a => a.Proyecto)
+            select a;
+            if (!String.IsNullOrEmpty(textoABuscar))
+            {
+                asignaciones = asignaciones.Where(a => a.Empleado.NombreEmpleado.Contains(textoABuscar));
+            }
+
+            return View(await asignaciones.ToListAsync());
+            //var personaDBContext = _context.Asignaciones.Include(a => a.Empleado).Include(a => a.Proyecto);
+            //return View(await personaDBContext.ToListAsync());
+        }
+        [HttpPost]
+        public string Index(string textoABuscar, bool notUsed)
+        {
+            return "From [HttpPost]Index: filter on " + textoABuscar;
         }
 
         // GET: Asignaciones/Details/5
@@ -48,7 +65,7 @@ namespace MVCPersona.Controllers
         // GET: Asignaciones/Create
         public IActionResult Create()
         {
-            ViewData["EmpleadoId"] = new SelectList(_context.Empleados, "ID", "ApellidoEmpleado");
+            ViewData["EmpleadoId"] = new SelectList(_context.Empleados, "ID", "NombreEmpleado");
             ViewData["ProyectoId"] = new SelectList(_context.Proyectos, "ID", "DescripcionProyecto");
             return View();
         }

@@ -19,9 +19,28 @@ namespace MVCPersona.Controllers
         }
 
         // GET: Empleados
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(String textoABuscar)
         {
-            return View(await _context.Empleados.ToListAsync());
+
+            if(_context.Empleados == null)
+            {
+                return Problem("No se ha inicializado el contexto");
+            }
+            var empleados = from e in _context.Empleados
+                            select e;
+            if(!String.IsNullOrEmpty(textoABuscar))
+            {
+                empleados = empleados.Where(e => e.NombreEmpleado.Contains(textoABuscar));
+            }
+
+            return View(await empleados.ToListAsync());
+           // return View(await _context.Empleados.ToListAsync());
+        }
+
+        [HttpPost]
+        public string Index(string textoABuscar, bool notUsed)
+        {
+            return "From [HttpPost]Index: filter on " + textoABuscar;
         }
 
         // GET: Empleados/Details/5

@@ -7,22 +7,27 @@ namespace MVCPersona.Models
     {
         public int ID { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "La fecha de asignación es requerida")]
+        [Display(Name = "Fecha de Asignación")]
+        [DataType(DataType.Date)]
 
         public DateTime FechaAsignacion { get; set; }
 
         [StringLength(50)]
-        [Required]
+        [Required(ErrorMessage = "El rol de asignación es requerido")]
+        [Display(Name = "Rol de Asignación")]
         public string RolAsignacion { get; set; }
 
         //llaves foráneas
         [Required]
         [ForeignKey("Empleado")]
+        [Display(Name = "Empleado en la asignación")]
 
         public int? EmpleadoId { get; set; }
 
         [Required]
         [ForeignKey("Proyecto")]
+        [Display(Name = "Proyecto de Asignación")]
 
         public int? ProyectoId { get; set; }
 
